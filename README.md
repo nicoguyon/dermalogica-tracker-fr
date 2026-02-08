@@ -15,6 +15,7 @@ Outil professionnel de scraping et d'analyse comparative pour les produits cosm�
 
 ## ✨ Fonctionnalités
 
+### Scraper CLI
 - 🔍 **Scraping multi-sites** : Sephora, Nocibé, Marionnaud, Lookfantastic, Feelunique
 - 🏷️ **Filtrage par marque** : Focus sur Dermalogica et concurrents
 - 📊 **Analyse comparative** : Comparaison de prix entre marques
@@ -24,6 +25,18 @@ Outil professionnel de scraping et d'analyse comparative pour les produits cosm�
 - 📦 **Exports enrichis** : JSON et CSV avec données comparatives
 - 🛡️ **Anti-détection** : User-Agent rotation, rate limiting
 - 🎨 **Interface CLI riche** : Commandes intuitives avec Rich
+
+### 🆕 Dashboard Web (NOUVEAU!)
+- 📊 **Interface moderne** : Dashboard React avec dark mode
+- 📈 **Graphiques interactifs** : Visualisations des données avec Recharts
+- 🔍 **Filtres avancés** : Recherche et filtrage multi-critères
+- 💰 **Tracking promotions** : Détection automatique des baisses de prix
+- 🎯 **Analyse marques** : Comparaison visuelle des positionnements prix
+- 📱 **Responsive** : Fonctionne sur mobile, tablette et desktop
+- ⚡ **API REST** : Backend Flask pour accès aux données
+- 🐳 **Docker ready** : Déploiement en un clic
+
+👉 **[Guide Dashboard](./QUICKSTART_DASHBOARD.md)** | **[Documentation complète Dashboard](./DASHBOARD_README.md)**
 
 ## 🚀 Installation
 

@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: dermalogica-backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./database:/app/database:ro
+      - ./config.py:/app/config.py:ro
+    environment:
+      - FLASK_ENV=production
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: dermalogica-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  database:

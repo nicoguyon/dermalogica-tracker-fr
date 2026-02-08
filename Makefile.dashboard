@@ -1,0 +1,117 @@
+# Makefile pour le Dashboard Dermalogica Tracker
+
+.PHONY: help install dev build docker-up docker-down docker-logs clean test
+
+# Couleurs pour output
+BLUE=\033[0;34m
+GREEN=\033[0;32m
+RED=\033[0;31m
+NC=\033[0m # No Color
+
+help: ## Afficher l'aide
+	@echo "$(BLUE)Dashboard Dermalogica Tracker - Commandes disponibles:$(NC)"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(GREEN)%-20s$(NC) %s\n", $$1, $$2}'
+	@echo ""
+
+install: ## Installer toutes les dépendances
+	@echo "$(BLUE)Installation des dépendances...$(NC)"
+	cd backend && pip install -r requirements.txt
+	cd frontend && npm install
+	@echo "$(GREEN)✓ Installation terminée$(NC)"
+
+dev-backend: ## Lancer le backend en mode dev
+	@echo "$(BLUE)Démarrage du backend (port 5000)...$(NC)"
+	cd backend && python app.py
+
+dev-frontend: ## Lancer le frontend en mode dev
+	@echo "$(BLUE)Démarrage du frontend (port 3000)...$(NC)"
+	cd frontend && npm run dev
+
+dev: ## Lancer backend + frontend en parallèle (dev)
+	@echo "$(BLUE)Démarrage du dashboard en mode développement...$(NC)"
+	@$(MAKE) -j2 dev-backend dev-frontend
+
+build-frontend: ## Build le frontend pour production
+	@echo "$(BLUE)Build du frontend...$(NC)"
+	cd frontend && npm run build
+	@echo "$(GREEN)✓ Build terminé: frontend/dist/$(NC)"
+
+docker-up: ## Démarrer avec Docker
+	@echo "$(BLUE)Démarrage des containers Docker...$(NC)"
+	docker-compose up -d
+	@echo "$(GREEN)✓ Dashboard accessible sur http://localhost$(NC)"
+	@echo "$(GREEN)✓ API accessible sur http://localhost:5000$(NC)"
+
+docker-build: ## Build et démarrer avec Docker
+	@echo "$(BLUE)Build et démarrage des containers...$(NC)"
+	docker-compose up --build -d
+	@echo "$(GREEN)✓ Dashboard démarré$(NC)"
+
+docker-down: ## Arrêter les containers Docker
+	@echo "$(BLUE)Arrêt des containers...$(NC)"
+	docker-compose down
+	@echo "$(GREEN)✓ Containers arrêtés$(NC)"
+
+docker-logs: ## Afficher les logs Docker
+	docker-compose logs -f
+
+docker-restart: docker-down docker-up ## Redémarrer les containers
+
+clean: ## Nettoyer les fichiers temporaires
+	@echo "$(BLUE)Nettoyage...$(NC)"
+	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	find . -type f -name "*.log" -delete 2>/dev/null || true
+	rm -rf frontend/dist 2>/dev/null || true
+	rm -rf frontend/node_modules/.vite 2>/dev/null || true
+	@echo "$(GREEN)✓ Nettoyage terminé$(NC)"
+
+test-api: ## Tester que l'API fonctionne
+	@echo "$(BLUE)Test de l'API...$(NC)"
+	@curl -s http://localhost:5000/api/health | grep -q "ok" && echo "$(GREEN)✓ API OK$(NC)" || echo "$(RED)✗ API KO$(NC)"
+
+scrape-sample: ## Scraper des données de test
+	@echo "$(BLUE)Scraping de données de test...$(NC)"
+	python3 cli.py scrape --brands dermalogica --max-pages 2
+	@echo "$(GREEN)✓ Données scrapées$(NC)"
+
+stats: ## Afficher les stats de la base
+	python3 cli.py stats
+
+status: ## Vérifier le statut du dashboard
+	@echo "$(BLUE)Statut du dashboard:$(NC)"
+	@echo ""
+	@echo "Backend:"
+	@curl -s http://localhost:5000/api/health >/dev/null 2>&1 && echo "  $(GREEN)✓ Backend OK (port 5000)$(NC)" || echo "  $(RED)✗ Backend KO$(NC)"
+	@echo ""
+	@echo "Frontend:"
+	@curl -s http://localhost:3000 >/dev/null 2>&1 && echo "  $(GREEN)✓ Frontend OK (port 3000)$(NC)" || echo "  $(RED)✗ Frontend KO (normal si Docker)$(NC)"
+	@curl -s http://localhost >/dev/null 2>&1 && echo "  $(GREEN)✓ Frontend OK (port 80 Docker)$(NC)" || echo "  $(RED)✗ Frontend KO$(NC)"
+	@echo ""
+	@echo "Base de données:"
+	@test -f database/cosmetique.db && echo "  $(GREEN)✓ Base de données existe$(NC)" || echo "  $(RED)✗ Base de données manquante$(NC)"
+	@test -f database/cosmetique.db && sqlite3 database/cosmetique.db "SELECT COUNT(*) FROM products" | xargs -I {} echo "  {} produits en base" || true
+
+update-deps: ## Mettre à jour les dépendances
+	@echo "$(BLUE)Mise à jour des dépendances...$(NC)"
+	cd backend && pip install --upgrade -r requirements.txt
+	cd frontend && npm update
+	@echo "$(GREEN)✓ Dépendances mises à jour$(NC)"
+
+backup-db: ## Backup de la base de données
+	@echo "$(BLUE)Backup de la base de données...$(NC)"
+	@mkdir -p backups
+	@cp database/cosmetique.db backups/backup-$$(date +%Y%m%d-%H%M%S).db
+	@echo "$(GREEN)✓ Backup créé dans backups/$(NC)"
+
+format-frontend: ## Formater le code frontend (Prettier)
+	@echo "$(BLUE)Formatage du code frontend...$(NC)"
+	cd frontend && npx prettier --write "src/**/*.{js,jsx,css}"
+	@echo "$(GREEN)✓ Code formaté$(NC)"
+
+lint-frontend: ## Linter le code frontend
+	@echo "$(BLUE)Linting du code frontend...$(NC)"
+	cd frontend && npm run lint || echo "$(RED)Linter non configuré$(NC)"
+
+.DEFAULT_GOAL := help
