@@ -26,8 +26,7 @@ WORKDIR /app
 RUN python populate_db.py
 
 # Expose port
-ENV PORT=5000
 EXPOSE 5000
 
-# Run with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "backend.app:app"]
+# Run with gunicorn - use shell form so $PORT is expanded
+CMD gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --timeout 120 backend.app:app
