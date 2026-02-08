@@ -1,18 +1,37 @@
-"""Flask API for Dermalogica Tracker Dashboard."""
+"""Flask API for Dermalogica Competitive Tracker."""
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import sqlite3
 from datetime import datetime, timedelta
 from pathlib import Path
+import os
 import sys
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config import DB_PATH
 
-app = Flask(__name__)
+# Serve frontend static files in production
+FRONTEND_DIR = Path(__file__).parent.parent / 'frontend' / 'dist'
+
+app = Flask(__name__, static_folder=str(FRONTEND_DIR), static_url_path='')
 CORS(app)
+
+
+@app.route('/')
+def serve_frontend():
+    """Serve the React SPA."""
+    return send_from_directory(app.static_folder, 'index.html')
+
+
+@app.route('/<path:path>')
+def serve_static(path):
+    """Serve static files, fallback to index.html for SPA routing."""
+    file_path = Path(app.static_folder) / path
+    if file_path.exists():
+        return send_from_directory(app.static_folder, path)
+    return send_from_directory(app.static_folder, 'index.html')
 
 
 def get_db_connection():

@@ -1,4 +1,4 @@
-"""Configuration globale du scraper."""
+"""Configuration globale du tracker concurrentiel."""
 
 import os
 from pathlib import Path
@@ -11,63 +11,43 @@ EXPORT_DIR = BASE_DIR / "exports"
 
 # Rate limiting (secondes entre requêtes)
 REQUEST_DELAY = 2
-REQUEST_TIMEOUT = 10
-
-# User-Agent rotation
-USER_AGENTS = [
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-]
+REQUEST_TIMEOUT = 30
 
 # Retry configuration
 MAX_RETRIES = 3
 RETRY_DELAY = 5
 
-# Marques cibles (focus Dermalogica + concurrents)
+# 3 marques concurrentes de Dermalogica
 TARGET_BRANDS = [
-    'dermalogica',
-    'skinceuticals',
-    'drunk elephant',
     "paula's choice",
-    'the ordinary',
     'murad',
-    'dr. dennis gross',
-    'clinique'
+    'skinceuticals',
 ]
 
-# Mapping des variations de noms de marques
-BRAND_ALIASES = {
-    'dermalogica': ['dermalogica'],
-    'skinceuticals': ['skinceuticals', 'skin ceuticals'],
-    'drunk elephant': ['drunk elephant', 'drunkelephant'],
-    "paula's choice": ["paula's choice", 'paulas choice', 'paula choice'],
-    'the ordinary': ['the ordinary', 'ordinary'],
-    'murad': ['murad'],
-    'dr. dennis gross': ['dr. dennis gross', 'dr dennis gross', 'dennis gross'],
-    'clinique': ['clinique']
-}
-
-# Sites configuration
+# Sites concurrents (sites officiels des marques)
 SITES = {
-    'sephora': {
-        'base_url': 'https://www.sephora.fr',
+    'paulaschoice': {
+        'base_url': 'https://www.paulaschoice.fr',
+        'catalog_url': 'https://www.paulaschoice.fr/fr/nos-soins',
+        'brand': "Paula's Choice",
+        'currency': 'EUR',
+        'method': 'playwright_html',
         'enabled': True
     },
-    'nocibe': {
-        'base_url': 'https://www.nocibe.fr',
+    'murad': {
+        'base_url': 'https://www.murad.com',
+        'catalog_url': 'https://www.murad.com/collections/all/products.json?limit=250',
+        'brand': 'Murad',
+        'currency': 'USD',
+        'method': 'shopify_json',
         'enabled': True
     },
-    'marionnaud': {
-        'base_url': 'https://www.marionnaud.fr',
-        'enabled': True
-    },
-    'lookfantastic': {
-        'base_url': 'https://www.lookfantastic.fr',
-        'enabled': True
-    },
-    'feelunique': {
-        'base_url': 'https://www.feelunique.com/fr',
+    'skinceuticals': {
+        'base_url': 'https://www.skinceuticals.com',
+        'catalog_url': 'https://www.skinceuticals.com/skin-care',
+        'brand': 'SkinCeuticals',
+        'currency': 'USD',
+        'method': 'playwright_html',
         'enabled': True
     }
 }
