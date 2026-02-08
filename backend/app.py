@@ -25,13 +25,12 @@ def serve_frontend():
     return send_from_directory(app.static_folder, 'index.html')
 
 
-@app.route('/<path:path>')
-def serve_static(path):
-    """Serve static files, fallback to index.html for SPA routing."""
-    file_path = Path(app.static_folder) / path
-    if file_path.exists():
-        return send_from_directory(app.static_folder, path)
-    return send_from_directory(app.static_folder, 'index.html')
+@app.errorhandler(404)
+def not_found(e):
+    """Fallback to index.html for SPA routing."""
+    if app.static_folder:
+        return send_from_directory(app.static_folder, 'index.html')
+    return jsonify({'error': 'Not found'}), 404
 
 
 def get_db_connection():
