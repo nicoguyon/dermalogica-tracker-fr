@@ -1,12 +1,33 @@
 import { useState, useEffect } from 'react'
-import { Bell, AlertTriangle, TrendingDown, ShieldAlert, Package, ArrowRight } from 'lucide-react'
-import { fetchBrands, fetchProducts, fetchPromotions } from '../utils/api'
+import { Bell, AlertTriangle, TrendingDown, ShieldAlert, Package, Lightbulb, Sparkles } from 'lucide-react'
+import { fetchBrands, fetchProducts, fetchPromotions, fetchNewProducts } from '../utils/api'
 
 const ALERT_TYPES = {
   price_cheaper: { icon: TrendingDown, color: 'red', label: 'Concurrent moins cher' },
   category_gap: { icon: ShieldAlert, color: 'amber', label: 'Gap de gamme' },
   competitor_promo: { icon: AlertTriangle, color: 'orange', label: 'Promo concurrent' },
-  new_competitor_product: { icon: Package, color: 'blue', label: 'Nouveau produit concurrent' },
+  new_competitor: { icon: Sparkles, color: 'blue', label: 'Nouveau produit concurrent' },
+}
+
+const getRecommendation = (alert) => {
+  switch (alert.type) {
+    case 'price_cheaper':
+      if (alert.severity === 'high') {
+        return `Envisager une offre promotionnelle ciblée ou un bundle pour rester compétitif face à ${alert.brand}.`
+      }
+      return `Surveiller l'évolution du prix. Mettre en avant la valeur ajoutée et la qualité Dermalogica.`
+    case 'category_gap':
+      return `Étudier le potentiel de lancement d'une gamme "${alert.data?.category}" pour combler ce gap concurrentiel.`
+    case 'competitor_promo':
+      if (alert.data?.discount >= 30) {
+        return `Promo agressive : réagir avec une offre limitée ou un pack exclusif sur la même catégorie.`
+      }
+      return `Promo modérée : surveiller l'impact sur les ventes. Préparer une contre-offre si nécessaire.`
+    case 'new_competitor':
+      return `Analyser le positionnement du produit et identifier les différenciateurs Dermalogica sur ce segment.`
+    default:
+      return null
+  }
 }
 
 const Alerts = () => {
@@ -20,10 +41,11 @@ const Alerts = () => {
 
   const generateAlerts = async () => {
     try {
-      const [brandsData, productsData, promosData] = await Promise.all([
+      const [brandsData, productsData, promosData, newProductsData] = await Promise.all([
         fetchBrands(),
         fetchProducts({ per_page: 300 }),
         fetchPromotions(30),
+        fetchNewProducts(14),
       ])
 
       const products = productsData.products || []
@@ -47,7 +69,7 @@ const Alerts = () => {
         }
       })
 
-      // 2. Category gaps - categories where competitors have products but Dermalogica doesn't
+      // 2. Category gaps
       const dermaCategories = new Set(dermaProducts.map(p => (p.category || '').toLowerCase()))
       const competitorCategories = {}
       competitorProducts.forEach(p => {
@@ -88,7 +110,7 @@ const Alerts = () => {
         }
       })
 
-      // 4. Products where competitors are cheaper than Dermalogica for similar categories
+      // 4. Category-level price comparison
       const dermaCategoryPrices = {}
       dermaProducts.forEach(p => {
         const cat = (p.category || '').toLowerCase()
@@ -114,6 +136,19 @@ const Alerts = () => {
         })
       })
 
+      // 5. New competitor products (last 14 days)
+      const newCompetitorProducts = (newProductsData || []).filter(p => p.brand !== 'Dermalogica')
+      newCompetitorProducts.forEach(p => {
+        generatedAlerts.push({
+          type: 'new_competitor',
+          severity: 'low',
+          title: `${p.brand} lance "${p.name}"`,
+          description: `${p.current_price ? `Prix: ${p.current_price}€` : 'Prix N/A'}${p.category ? ` | Catégorie: ${p.category}` : ''}`,
+          brand: p.brand,
+          data: { product: p.name, price: p.current_price, category: p.category },
+        })
+      })
+
       // Sort by severity
       const severityOrder = { high: 0, medium: 1, low: 2 }
       generatedAlerts.sort((a, b) => (severityOrder[a.severity] || 2) - (severityOrder[b.severity] || 2))
@@ -135,12 +170,21 @@ const Alerts = () => {
     price_cheaper: alerts.filter(a => a.type === 'price_cheaper').length,
     category_gap: alerts.filter(a => a.type === 'category_gap').length,
     competitor_promo: alerts.filter(a => a.type === 'competitor_promo').length,
+    new_competitor: alerts.filter(a => a.type === 'new_competitor').length,
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
+      <div className="space-y-6">
+        <div className="h-10 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="h-24 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" />
+          ))}
+        </div>
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-28 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" />
+        ))}
       </div>
     )
   }
@@ -151,17 +195,18 @@ const Alerts = () => {
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Alertes</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
-          Signaux concurrentiels et opportunités pour Dermalogica
+          Signaux concurrentiels et recommandations pour Dermalogica
         </p>
       </div>
 
       {/* Alert Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
           { key: 'all', label: 'Toutes', count: alertCounts.all, icon: Bell, bg: 'bg-gray-900 dark:bg-white', text: 'text-white dark:text-gray-900' },
           { key: 'price_cheaper', label: 'Prix', count: alertCounts.price_cheaper, icon: TrendingDown, bg: 'bg-red-50 dark:bg-red-900/20', text: 'text-red-700 dark:text-red-400' },
           { key: 'category_gap', label: 'Gaps', count: alertCounts.category_gap, icon: ShieldAlert, bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-700 dark:text-amber-400' },
           { key: 'competitor_promo', label: 'Promos', count: alertCounts.competitor_promo, icon: AlertTriangle, bg: 'bg-orange-50 dark:bg-orange-900/20', text: 'text-orange-700 dark:text-orange-400' },
+          { key: 'new_competitor', label: 'Nouveaux', count: alertCounts.new_competitor, icon: Sparkles, bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-700 dark:text-blue-400' },
         ].map(item => {
           const Icon = item.icon
           const isActive = filter === item.key
@@ -201,6 +246,7 @@ const Alerts = () => {
               medium: 'border-l-amber-500',
               low: 'border-l-blue-500',
             }
+            const recommendation = getRecommendation(alert)
 
             return (
               <div
@@ -233,6 +279,14 @@ const Alerts = () => {
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       {alert.description}
                     </p>
+                    {recommendation && (
+                      <div className="mt-3 flex items-start gap-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+                        <Lightbulb className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                          <span className="font-semibold">Action recommandée :</span> {recommendation}
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${
                     alert.severity === 'high' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :

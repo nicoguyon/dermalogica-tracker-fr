@@ -8,6 +8,8 @@ import Compare from './pages/Compare'
 import Alerts from './pages/Alerts'
 import Promotions from './pages/Promotions'
 import NewProducts from './pages/NewProducts'
+import ProductDetail from './pages/ProductDetail'
+import ProductCompare from './pages/ProductCompare'
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -38,6 +40,8 @@ function App() {
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/promotions" element={<Promotions />} />
               <Route path="/new" element={<NewProducts />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/product-compare" element={<ProductCompare />} />
             </Routes>
           </main>
         </div>

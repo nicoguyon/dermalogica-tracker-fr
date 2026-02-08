@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { GitCompare, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { GitCompare, ArrowUpRight, ArrowDownRight, Minus, ArrowRight } from 'lucide-react'
 import { fetchBrands, fetchProducts } from '../utils/api'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts'
 
@@ -88,11 +89,20 @@ const Compare = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analyse Comparative</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
-          Positionnement de Dermalogica face à ses concurrents
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analyse Comparative</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
+            Positionnement de Dermalogica face à ses concurrents
+          </p>
+        </div>
+        <Link
+          to="/product-compare"
+          className="hidden sm:inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        >
+          Comparer des produits
+          <ArrowRight className="h-4 w-4 ml-2" />
+        </Link>
       </div>
 
       {/* Brand Overview Cards */}

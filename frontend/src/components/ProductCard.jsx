@@ -1,4 +1,5 @@
-import { ExternalLink, TrendingDown } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { ExternalLink, TrendingDown, Package } from 'lucide-react'
 
 const BRAND_COLORS = {
   'Dermalogica': 'bg-gray-900 text-white dark:bg-white dark:text-gray-900',
@@ -12,34 +13,38 @@ const ProductCard = ({ product, showDiscount = false }) => {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all group">
-      <div className="relative aspect-square bg-gray-50 dark:bg-gray-700">
-        {product.image_url ? (
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-300 dark:text-gray-600">
-            <Package className="h-12 w-12" />
-          </div>
-        )}
-        {showDiscount && product.discount_percent && (
-          <div className="absolute top-3 right-3 bg-red-500 text-white px-2.5 py-1 rounded-lg text-xs font-bold flex items-center shadow-lg">
-            <TrendingDown className="h-3 w-3 mr-1" />
-            {Math.abs(product.discount_percent)}%
-          </div>
-        )}
-      </div>
+      <Link to={`/product/${product.id}`} className="block">
+        <div className="relative aspect-square bg-gray-50 dark:bg-gray-700">
+          {product.image_url ? (
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-300 dark:text-gray-600">
+              <Package className="h-12 w-12" />
+            </div>
+          )}
+          {showDiscount && product.discount_percent && (
+            <div className="absolute top-3 right-3 bg-red-500 text-white px-2.5 py-1 rounded-lg text-xs font-bold flex items-center shadow-lg">
+              <TrendingDown className="h-3 w-3 mr-1" />
+              {Math.abs(product.discount_percent)}%
+            </div>
+          )}
+        </div>
+      </Link>
       <div className="p-4">
         <div className="mb-2">
           <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${brandColor}`}>
             {product.brand}
           </span>
         </div>
-        <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3 line-clamp-2 leading-snug">
-          {product.name}
-        </h3>
+        <Link to={`/product/${product.id}`}>
+          <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3 line-clamp-2 leading-snug hover:underline">
+            {product.name}
+          </h3>
+        </Link>
         <div className="flex items-center justify-between">
           <div>
             {product.current_price ? (
@@ -63,6 +68,7 @@ const ProductCard = ({ product, showDiscount = false }) => {
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              onClick={(e) => e.stopPropagation()}
             >
               <ExternalLink className="h-4 w-4" />
             </a>
@@ -72,8 +78,5 @@ const ProductCard = ({ product, showDiscount = false }) => {
     </div>
   )
 }
-
-// Import Package for fallback icon
-import { Package } from 'lucide-react'
 
 export default ProductCard
