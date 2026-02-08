@@ -10,7 +10,6 @@ const Products = () => {
   const [loading, setLoading] = useState(true)
   const [pagination, setPagination] = useState({ page: 1, per_page: 20, total: 0, pages: 0 })
 
-  // Filters
   const [filters, setFilters] = useState({
     brand: '',
     site: '',
@@ -42,16 +41,10 @@ const Products = () => {
   const loadProducts = async () => {
     setLoading(true)
     try {
-      const params = {
-        page: pagination.page,
-        per_page: pagination.per_page,
-        ...filters,
-      }
-      // Remove empty filters
+      const params = { page: pagination.page, per_page: pagination.per_page, ...filters }
       Object.keys(params).forEach((key) => {
         if (params[key] === '') delete params[key]
       })
-
       const data = await fetchProducts(params)
       setProducts(data.products)
       setPagination(data.pagination)
@@ -72,90 +65,63 @@ const Products = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const selectClass = "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 dark:focus:ring-white dark:bg-gray-800 dark:text-white"
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Produits</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Explorez tous les produits de votre base de données
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
+          Explorez {pagination.total} produits
         </p>
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
         <div className="flex items-center mb-4">
-          <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Filtres</h2>
+          <Filter className="h-4 w-4 text-gray-400 mr-2" />
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Filtres</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Search */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Recherche
-            </label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Recherche</label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Nom ou marque..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="pl-10 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                className="pl-9 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 dark:focus:ring-white dark:bg-gray-800 dark:text-white"
               />
             </div>
           </div>
 
-          {/* Brand */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Marque
-            </label>
-            <select
-              value={filters.brand}
-              onChange={(e) => handleFilterChange('brand', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-            >
-              <option value="">Toutes les marques</option>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Marque</label>
+            <select value={filters.brand} onChange={(e) => handleFilterChange('brand', e.target.value)} className={selectClass}>
+              <option value="">Toutes</option>
               {brands.map((brand) => (
-                <option key={brand.brand} value={brand.brand}>
-                  {brand.brand} ({brand.product_count})
-                </option>
+                <option key={brand.brand} value={brand.brand}>{brand.brand} ({brand.product_count})</option>
               ))}
             </select>
           </div>
 
-          {/* Site */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Site
-            </label>
-            <select
-              value={filters.site}
-              onChange={(e) => handleFilterChange('site', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-            >
-              <option value="">Tous les sites</option>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Site</label>
+            <select value={filters.site} onChange={(e) => handleFilterChange('site', e.target.value)} className={selectClass}>
+              <option value="">Tous</option>
               {sites.map((site) => (
-                <option key={site.site} value={site.site}>
-                  {site.site} ({site.product_count})
-                </option>
+                <option key={site.site} value={site.site}>{site.site} ({site.product_count})</option>
               ))}
             </select>
           </div>
 
-          {/* Sort */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Trier par
-            </label>
-            <select
-              value={filters.sort_by}
-              onChange={(e) => handleFilterChange('sort_by', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-            >
-              <option value="last_updated">Dernière mise à jour</option>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Trier par</label>
+            <select value={filters.sort_by} onChange={(e) => handleFilterChange('sort_by', e.target.value)} className={selectClass}>
+              <option value="last_updated">Mise à jour</option>
               <option value="name">Nom</option>
               <option value="brand">Marque</option>
               <option value="current_price">Prix</option>
@@ -163,64 +129,49 @@ const Products = () => {
             </select>
           </div>
 
-          {/* Price Range */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Prix min
-            </label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Prix min</label>
             <input
-              type="number"
-              placeholder="0"
-              value={filters.min_price}
+              type="number" placeholder="0" value={filters.min_price}
               onChange={(e) => handleFilterChange('min_price', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+              className={selectClass}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Prix max
-            </label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Prix max</label>
             <input
-              type="number"
-              placeholder="999"
-              value={filters.max_price}
+              type="number" placeholder="999" value={filters.max_price}
               onChange={(e) => handleFilterChange('max_price', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+              className={selectClass}
             />
           </div>
         </div>
-      </div>
-
-      {/* Results count */}
-      <div className="text-sm text-gray-600 dark:text-gray-400">
-        {pagination.total} produit{pagination.total > 1 ? 's' : ''} trouvé{pagination.total > 1 ? 's' : ''}
       </div>
 
       {/* Products Grid */}
       {loading ? (
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
         </div>
       ) : products.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
           <p className="text-gray-500 dark:text-gray-400">Aucun produit trouvé</p>
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
 
-          {/* Pagination */}
           {pagination.pages > 1 && (
             <div className="flex justify-center items-center space-x-2 mt-8">
               <button
                 onClick={() => handlePageChange(pagination.page - 1)}
                 disabled={pagination.page === 1}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white transition-colors"
               >
                 Précédent
               </button>
@@ -228,18 +179,14 @@ const Products = () => {
               <div className="flex space-x-1">
                 {[...Array(pagination.pages)].map((_, i) => {
                   const page = i + 1
-                  if (
-                    page === 1 ||
-                    page === pagination.pages ||
-                    (page >= pagination.page - 1 && page <= pagination.page + 1)
-                  ) {
+                  if (page === 1 || page === pagination.pages || (page >= pagination.page - 1 && page <= pagination.page + 1)) {
                     return (
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
-                        className={`px-4 py-2 rounded-lg ${
+                        className={`px-3 py-2 rounded-lg text-sm ${
                           page === pagination.page
-                            ? 'bg-primary-600 text-white'
+                            ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
                             : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white'
                         }`}
                       >
@@ -247,7 +194,7 @@ const Products = () => {
                       </button>
                     )
                   } else if (page === pagination.page - 2 || page === pagination.page + 2) {
-                    return <span key={page} className="px-2 dark:text-white">...</span>
+                    return <span key={page} className="px-2 dark:text-white text-sm">...</span>
                   }
                   return null
                 })}
@@ -256,7 +203,7 @@ const Products = () => {
               <button
                 onClick={() => handlePageChange(pagination.page + 1)}
                 disabled={pagination.page === pagination.pages}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white transition-colors"
               >
                 Suivant
               </button>

@@ -1,4 +1,4 @@
-"""Peuple la base de données avec les données scrappées des 3 concurrents."""
+"""Peuple la base de données avec Dermalogica + 3 concurrents."""
 
 import sqlite3
 import json
@@ -8,6 +8,42 @@ from pathlib import Path
 import random
 
 DB_PATH = Path(__file__).parent / "database" / "cosmetique.db"
+
+# ============================================================
+# DONNÉES DERMALOGICA (30 best-sellers - dermalogica.fr)
+# ============================================================
+DERMALOGICA_PRODUCTS = [
+    {"name": "Daily Microfoliant", "price": 75.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/DMTRAVEL_a3e8ddff-59b7-468b-93b3-eb2b50728de4.jpg", "url": "https://www.dermalogica.fr/collections/products/products/exfoliant-quotidien-doux-microfoliant-daily-microfoliant", "category": "Exfoliants"},
+    {"name": "Daily Superfoliant", "price": 75.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/SuperfoliantTravel.jpg", "url": "https://www.dermalogica.fr/collections/products/products/exfoliant-quotidien-detoxifiant-superfoliant-daily-superfoliant", "category": "Exfoliants"},
+    {"name": "Daily Milkfoliant", "price": 75.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/DailyMilkfolianttravel_64d33c3f-0383-4a42-ab8f-af6cbaedce9b.jpg", "url": "https://www.dermalogica.fr/collections/products/products/daily-milkfoliant", "category": "Exfoliants"},
+    {"name": "BioLumin-C Serum", "price": 99.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/biolumincserum30ML.jpg", "url": "https://www.dermalogica.fr/collections/products/products/concentre-vitamine-detoxifiant-biolumin-c-serum", "category": "Sérums"},
+    {"name": "BioLumin-C Gel Moisturizer", "price": 79.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/BIOLUMINCGELMOISTURIZER50ML.jpg", "url": "https://www.dermalogica.fr/collections/products/products/biolumin-c-gel-moisturizer", "category": "Hydratants"},
+    {"name": "BioLumin-C Night Restore", "price": 113.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/BLCNIGHTRESTORE.jpg", "url": "https://www.dermalogica.fr/collections/products/products/biolumin-c-night-restore-serum-de-nuit-double-antioxydant-vitamine-c-pro-vitamine-d", "category": "Sérums"},
+    {"name": "Pro Collagen Banking Serum", "price": 99.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/PROCOLLAGEN.jpg", "url": "https://www.dermalogica.fr/collections/products/products/pro-collagen-banking-serum-serum-booster-de-collagene", "category": "Sérums"},
+    {"name": "Smart Response Serum", "price": 169.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/SMARTRESPONSESERUM30ML.jpg", "url": "https://www.dermalogica.fr/collections/products/products/smart-response-serum", "category": "Sérums"},
+    {"name": "Phyto-Nature Firming Serum", "price": 179.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/PHYTONATUREFIRMINGSERUM_d3bec9f1-9ae8-4b66-8d8f-4a2bbc099a0b.jpg", "url": "https://www.dermalogica.fr/collections/products/products/serum-raffermissant-et-tenseur-phyto-nature-firming-serum", "category": "Sérums"},
+    {"name": "Phyto Nature Oxygen Cream", "price": 149.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/PHYTONATUREOXYGENCREAM_1aaedf34-2a72-426c-ba7f-e1df6bd80829.jpg", "url": "https://www.dermalogica.fr/collections/products/products/phyto-nature-oxygen-cream-hydratant-oxygenant-raffermissant", "category": "Hydratants"},
+    {"name": "Dynamic Skin Recovery SPF 50", "price": 99.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/DynamicSkinRecoverySPF50_3a014d93-6a6f-46d8-8f94-838db068f139.jpg", "url": "https://www.dermalogica.fr/collections/products/products/fluide-hydratant-reparateur-spf50-dynamic-skin-recovery-spf50", "category": "Hydratants & SPF"},
+    {"name": "Dynamic Skin Retinol Serum 3,5%", "price": 109.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/DynamicSkinRetinolSerum_0410a378-a366-4552-ada5-01fbcdf38236.jpg", "url": "https://www.dermalogica.fr/collections/products/products/dynamic-skin-retinol-serum-serum-concentre-au-retinol", "category": "Sérums"},
+    {"name": "Multivitamin Power Recovery Cream", "price": 109.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/MVPRC_313db57d-5cb9-47bc-a60f-2b6d6b134966.jpg", "url": "https://www.dermalogica.fr/collections/products/products/multivitamin-power-recovery-cream", "category": "Hydratants"},
+    {"name": "Special Cleansing Gel", "price": 56.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/SpecialCleansingGel_fb6f5289-ba31-44bd-943e-dc6751fabfb4.jpg", "url": "https://www.dermalogica.fr/collections/products/products/gel-nettoyant-moussant-special-cleansing-gel", "category": "Nettoyants"},
+    {"name": "Oil to Foam Total Cleanser", "price": 68.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/OILTOFOAM250.jpg", "url": "https://www.dermalogica.fr/collections/products/products/oil-to-foam-total-cleanser-nettoyant-demaquillant-huile-en-mousse-2-en-1", "category": "Nettoyants"},
+    {"name": "Precleanse", "price": 56.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/Precleanse_20a15adf-b4e9-446d-8270-84f3a2b8d0d0.jpg", "url": "https://www.dermalogica.fr/collections/products/products/huile-pre-nettoyante-demaquillante-precleanse", "category": "Nettoyants"},
+    {"name": "Liquid Peelfoliant (30% AHA + BHA + PHA)", "price": 79.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/LIQUIDPEELFOLIANT.jpg", "url": "https://www.dermalogica.fr/collections/products/products/liquid-peelfoliant-solution-peeling-liquide-quotidienne-30-aha-bha-pha", "category": "Exfoliants"},
+    {"name": "PowerBright Dark Spot Serum", "price": 113.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/POWERBRIGHTDARKSPOTSERUM30ML_67dd574c-1af0-46af-a4ce-1e2c300dcae0.jpg", "url": "https://www.dermalogica.fr/collections/products/products/powerbright-dark-spot-serum", "category": "Sérums"},
+    {"name": "PowerBright Dark Spot Peel", "price": 94.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/PowerbrightDarkSpotPeel.jpg", "url": "https://www.dermalogica.fr/collections/products/products/powerbright-dark-spot-peel-masque-peeling-anti-taches-et-eclat", "category": "Exfoliants"},
+    {"name": "PowerBright Overnight Cream", "price": 99.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/PowerbrightOvernightCream.jpg", "url": "https://www.dermalogica.fr/collections/products/products/powerbright-overnight-cream-soin-de-nuit-regenerant-anti-taches", "category": "Hydratants"},
+    {"name": "Skin Smoothing Cream", "price": 79.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/SkinSmoothingCream_OK_48196df8-8b7d-4362-b6c5-29bd09126dc6.jpg", "url": "https://www.dermalogica.fr/collections/products/products/creme-nourrissante-lissante-skin-smoothing-cream", "category": "Hydratants"},
+    {"name": "Age Bright Clearing Serum", "price": 89.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/AGEBRIGHT30ML.jpg", "url": "https://www.dermalogica.fr/collections/products/products/serum-anti-imperfections-age-bright-clearing-serum", "category": "Sérums"},
+    {"name": "Calm Water Gel", "price": 68.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/CALMWATERGEL50ML.jpg", "url": "https://www.dermalogica.fr/collections/products/products/hydrogel-calmant-calm-water-gel", "category": "Hydratants"},
+    {"name": "PoreScreen SPF 40", "price": 65.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/PORSCREEN.jpg", "url": "https://www.dermalogica.fr/collections/products/products/porescreen-spf40-base-de-teint-spf40-reductrice-de-pores", "category": "Hydratants & SPF"},
+    {"name": "Prisma Protect SPF 30", "price": 79.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/prismaprotect_a5c783b0-09aa-40d4-a60f-e34763114778.jpg", "url": "https://www.dermalogica.fr/collections/products/products/hydratant-multifonction-defense-et-eclat-prisma-protect-spf30", "category": "Hydratants & SPF"},
+    {"name": "Circular Hydration Serum", "price": 85.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/CIRCULARHYDRATIONSERUM30ML.jpg", "url": "https://www.dermalogica.fr/collections/products/products/circular-hydration-serum", "category": "Sérums"},
+    {"name": "Retinol Clearing Oil", "price": 99.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/RCOIL.jpg", "url": "https://www.dermalogica.fr/collections/products/products/retinol-clearing-oil", "category": "Sérums"},
+    {"name": "Sound Sleep Cocoon", "price": 89.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/SOUNDSLEEPCOCOON_181779b6-1cfa-4fee-8c5d-753401d884a2.jpg", "url": "https://www.dermalogica.fr/collections/products/products/cocon-de-nuit-sound-sleep-cocoon", "category": "Hydratants"},
+    {"name": "Phyto Nature Lifting Eye Cream", "price": 136.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/PNEC.jpg", "url": "https://www.dermalogica.fr/collections/products/products/phyto-nature-lifting-eye-cream-creme-contour-des-yeux-liftante-et-raffermissante", "category": "Contour des yeux"},
+    {"name": "Stress Positive Eye Lift", "price": 89.00, "image": "https://cdn.shopify.com/s/files/1/2466/6587/files/STRESSPOSITIVEEYELIFT.jpg", "url": "https://www.dermalogica.fr/collections/products/products/stress-positif-raffermissant-yeux-stress-positive-eye-lift", "category": "Contour des yeux"},
+]
 
 # ============================================================
 # DONNÉES PAULA'S CHOICE (top 45 produits - best-sellers FR)
@@ -260,7 +296,10 @@ def populate():
 
         return count
 
-    # Insérer les 3 marques
+    # Insérer Dermalogica + 3 concurrents
+    dl_count = insert_products(DERMALOGICA_PRODUCTS, 'dermalogica', 'Dermalogica', 'EUR')
+    print(f"Dermalogica: {dl_count} produits insérés")
+
     pc_count = insert_products(PAULAS_CHOICE_PRODUCTS, 'paulaschoice', "Paula's Choice", 'EUR')
     print(f"Paula's Choice: {pc_count} produits insérés")
 

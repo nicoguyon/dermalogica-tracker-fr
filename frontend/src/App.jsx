@@ -4,6 +4,8 @@ import Navbar from './components/Navbar'
 import Dashboard from './pages/Dashboard'
 import Products from './pages/Products'
 import Brands from './pages/Brands'
+import Compare from './pages/Compare'
+import Alerts from './pages/Alerts'
 import Promotions from './pages/Promotions'
 import NewProducts from './pages/NewProducts'
 
@@ -25,13 +27,15 @@ function App() {
   return (
     <Router>
       <div className={`min-h-screen transition-colors ${darkMode ? 'dark' : ''}`}>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
           <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/products" element={<Products />} />
               <Route path="/brands" element={<Brands />} />
+              <Route path="/compare" element={<Compare />} />
+              <Route path="/alerts" element={<Alerts />} />
               <Route path="/promotions" element={<Promotions />} />
               <Route path="/new" element={<NewProducts />} />
             </Routes>

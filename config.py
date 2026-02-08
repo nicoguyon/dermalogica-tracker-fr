@@ -17,15 +17,24 @@ REQUEST_TIMEOUT = 30
 MAX_RETRIES = 3
 RETRY_DELAY = 5
 
-# 3 marques concurrentes de Dermalogica
+# Dermalogica + 3 marques concurrentes
 TARGET_BRANDS = [
+    'dermalogica',
     "paula's choice",
     'murad',
     'skinceuticals',
 ]
 
-# Sites concurrents (sites officiels des marques)
+# Sites (Dermalogica + concurrents)
 SITES = {
+    'dermalogica': {
+        'base_url': 'https://www.dermalogica.fr',
+        'catalog_url': 'https://www.dermalogica.fr/collections/products/products.json?limit=250',
+        'brand': 'Dermalogica',
+        'currency': 'EUR',
+        'method': 'shopify_json',
+        'enabled': True
+    },
     'paulaschoice': {
         'base_url': 'https://www.paulaschoice.fr',
         'catalog_url': 'https://www.paulaschoice.fr/fr/nos-soins',

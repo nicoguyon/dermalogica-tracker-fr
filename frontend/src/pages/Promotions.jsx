@@ -26,18 +26,17 @@ const Promotions = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Promotions</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
             Produits avec baisse de prix récente
           </p>
         </div>
         <select
           value={days}
           onChange={(e) => setDays(Number(e.target.value))}
-          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 dark:focus:ring-white dark:bg-gray-800 dark:text-white"
         >
           <option value={7}>7 derniers jours</option>
           <option value={14}>14 derniers jours</option>
@@ -45,32 +44,31 @@ const Promotions = () => {
         </select>
       </div>
 
-      {/* Stats */}
-      <div className="bg-gradient-to-r from-red-500 to-pink-500 rounded-lg shadow-md p-6 text-white">
-        <div className="flex items-center mb-2">
-          <TrendingDown className="h-8 w-8 mr-3" />
+      {/* Stats banner */}
+      <div className="bg-gray-900 dark:bg-white rounded-xl p-6">
+        <div className="flex items-center">
+          <TrendingDown className="h-8 w-8 mr-3 text-white dark:text-gray-900" />
           <div>
-            <h3 className="text-2xl font-bold">{promotions.length} promotions actives</h3>
-            <p className="text-red-100">Économisez jusqu'à {promotions.length > 0 ? Math.abs(Math.min(...promotions.map(p => p.discount_percent))) : 0}%</p>
+            <h3 className="text-2xl font-bold text-white dark:text-gray-900">{promotions.length} promotions actives</h3>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">
+              {promotions.length > 0 ? `Jusqu'à ${Math.abs(Math.min(...promotions.map(p => p.discount_percent)))}% de réduction` : 'Aucune promotion en cours'}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Promotions Grid */}
       {loading ? (
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
         </div>
       ) : promotions.length === 0 ? (
-        <div className="text-center py-12">
-          <TrendingDown className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+        <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+          <TrendingDown className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
           <p className="text-gray-500 dark:text-gray-400">Aucune promotion trouvée</p>
-          <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
-            Essayez d'augmenter la période de recherche
-          </p>
+          <p className="text-sm text-gray-400 mt-1">Essayez d'augmenter la période</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {promotions.map((product) => (
             <ProductCard key={product.id} product={product} showDiscount={true} />
           ))}
