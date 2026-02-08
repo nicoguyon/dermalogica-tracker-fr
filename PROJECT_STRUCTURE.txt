@@ -1,0 +1,93 @@
+🧴 Cosmetique Scraper - Structure du Projet
+============================================
+
+cosmetique-scraper/
+│
+├── 📄 README.md                    # Documentation principale
+├── 📄 ARCHITECTURE.md              # Architecture détaillée
+├── 📄 USAGE.md                     # Guide d'utilisation complet
+├── 📄 QUICKREF.md                  # Référence rapide
+├── 📄 CONTRIBUTING.md              # Guide pour ajouter des scrapers
+├── 📄 CHANGELOG.md                 # Historique des versions
+├── 📄 requirements.txt             # Dépendances Python
+├── 📄 .gitignore                   # Fichiers ignorés par Git
+├── 📄 .env.example                 # Variables d'environnement (exemple)
+│
+├── 🔧 Makefile                     # Commandes Make
+├── 🚀 setup.sh                     # Script d'installation
+├── 🚀 quickstart.sh                # Interface interactive
+├── 🚀 cli.py                       # Interface CLI principale
+├── 🧪 test_scraper.py              # Tests rapides
+│
+├── 📁 src/                         # Code source
+│   ├── __init__.py
+│   │
+│   ├── 📁 scrapers/                # Scrapers par site
+│   │   ├── __init__.py             # Factory de scrapers
+│   │   ├── base.py                 # Classe abstraite de base
+│   │   ├── sephora.py              # Scraper Sephora ✅
+│   │   ├── nocibe.py               # Scraper Nocibé ✅
+│   │   └── marionnaud.py           # Scraper Marionnaud 🚧
+│   │
+│   ├── 📁 database/                # Gestion base de données
+│   │   ├── __init__.py
+│   │   ├── models.py               # Modèle Product
+│   │   └── db.py                   # Database manager (SQLite)
+│   │
+│   ├── 📁 exporters/               # Exporteurs de données
+│   │   ├── __init__.py
+│   │   ├── json_exporter.py        # Export JSON
+│   │   └── csv_exporter.py         # Export CSV
+│   │
+│   └── 📁 utils/                   # Utilitaires
+│       ├── __init__.py
+│       ├── config.py               # Configuration globale
+│       └── logger.py               # Système de logging
+│
+├── 📁 examples/                    # Exemples d'utilisation
+│   └── basic_usage.py              # Exemples Python
+│
+└── 📁 (généré à l'exécution)
+    ├── 📁 data/
+    │   └── products.db             # Base SQLite
+    │
+    ├── 📁 exports/
+    │   ├── products_*.json         # Exports JSON
+    │   └── products_*.csv          # Exports CSV
+    │
+    ├── 📁 logs/
+    │   └── scraper_*.log           # Logs quotidiens
+    │
+    └── 📁 venv/                    # Environnement virtuel
+
+==============================================
+
+📊 STATISTIQUES DU PROJET
+
+  27 fichiers Python/Shell/Makefile
+  7 fichiers de documentation
+
+  Modules principaux :
+    - 3 scrapers (Sephora ✅, Nocibé ✅, Marionnaud 🚧)
+    - 1 base de données SQLite
+    - 2 exporteurs (JSON, CSV)
+    - 1 CLI complet avec 4 commandes
+    - Tests automatisés
+    - Makefile avec 15+ commandes
+    - Scripts d'installation automatique
+
+==============================================
+
+🚀 POUR COMMENCER
+
+1. Installation :
+   bash setup.sh
+
+2. Premier test :
+   source venv/bin/activate
+   python cli.py scrape --source sephora --limit 5
+
+3. Interface interactive :
+   bash quickstart.sh
+
+==============================================
